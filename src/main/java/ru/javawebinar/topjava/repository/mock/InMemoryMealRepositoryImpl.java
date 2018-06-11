@@ -1,5 +1,8 @@
 package ru.javawebinar.topjava.repository.mock;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
@@ -11,7 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+@Repository
 public class InMemoryMealRepositoryImpl implements MealRepository {
+    private static final Logger log = LoggerFactory.getLogger(InMemoryMealRepositoryImpl.class);
     private Map<Integer, Meal> repository = new ConcurrentHashMap<>();
     private Integer counter = 0;
 
@@ -21,6 +26,7 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public Meal save(int userId, Meal meal) {
+        log.info("save {}", meal);
         if (userId != meal.getUserId()){
             return null;
         }
@@ -35,6 +41,7 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public boolean delete(int userId, int id) {
+        log.info("delete {}", id);
         if (get(userId, id).getUserId() != userId){
             return false;
         }
@@ -43,12 +50,14 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
 
     @Override
     public Meal get(int userId, int id) {
+        log.info("get {}", id);
         Meal meal = repository.get(id);
         return userId == meal.getUserId() ? meal : null;
     }
 
     @Override
     public List<Meal> getAll(int userId) {
+        log.info("getAll {}", userId);
         return repository
                 .values()
                 .stream()
